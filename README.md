@@ -18,14 +18,32 @@
 
 ## Results Summary
 
+Benchmark on 8,453 EGFR inhibitors from ChEMBL (80/20 train/test split, 5-fold CV). Best values per metric in **bold**.
+
 | Model | Descriptor | Test R² | Test RMSE | Test ROC-AUC |
 |---|---|---|---|---|
-| XGBoost | Morgan | — | — | — |
-| Random Forest | Combined | — | — | — |
-| SVM | Morgan | — | — | — |
-| MLP | Morgan | — | — | — |
+| **XGBoost** | **RDKit FP** | **0.703** | **0.713** | 0.935 |
+| XGBoost | Morgan | 0.644 | 0.776 | 0.922 |
+| XGBoost | MACCS | 0.606 | 0.817 | 0.914 |
+| XGBoost | Combined | 0.649 | 0.772 | 0.927 |
+| XGBoost | PhysChem | 0.438 | 0.975 | 0.850 |
+| **Random Forest** | **Combined** | 0.689 | 0.727 | **0.936** |
+| Random Forest | Morgan | 0.690 | 0.726 | 0.933 |
+| Random Forest | RDKit FP | 0.689 | 0.727 | 0.927 |
+| Random Forest | MACCS | 0.617 | 0.808 | 0.919 |
+| Random Forest | PhysChem | 0.460 | 0.957 | 0.861 |
+| MLP | Morgan | 0.612 | 0.812 | 0.908 |
+| MLP | RDKit FP | 0.613 | 0.811 | — |
+| MLP | MACCS | 0.525 | 0.898 | 0.894 |
+| MLP | Combined | 0.602 | 0.822 | 0.904 |
+| MLP | PhysChem | 0.308 | 1.085 | 0.819 |
+| LinearSVM | RDKit FP | 0.424 | 0.990 | 0.848 |
+| LinearSVM | Morgan | 0.370 | 1.035 | 0.818 |
+| LinearSVM | MACCS | 0.367 | 1.038 | 0.860 |
+| LinearSVM | Combined | 0.353 | 1.049 | 0.815 |
+| LinearSVM | PhysChem | 0.156 | 1.198 | 0.742 |
 
-*Results will be updated after benchmark completion.*
+> **Key finding:** XGBoost + RDKit FP achieves the best regression performance (R² = 0.703, RMSE = 0.713 pIC50 units). Random Forest + Combined descriptors achieves the highest classification ROC-AUC (0.936). Physicochemical descriptors alone (12 features) reach R² = 0.460, demonstrating strong interpretable baselines.
 
 ## Repository Structure
 
