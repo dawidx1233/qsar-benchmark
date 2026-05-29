@@ -12,7 +12,7 @@
 
 ## Abstract
 
-Quantitative Structure-Activity Relationship (QSAR) modeling is a cornerstone of computational drug discovery, yet systematic comparisons of descriptor types and machine learning algorithms on identical datasets remain scarce. Here we present a rigorous benchmark of four ML algorithms — Random Forest (RF), XGBoost, Support Vector Machine (SVM), and Multi-Layer Perceptron (MLP) — combined with five molecular descriptor sets (Morgan circular fingerprints, RDKit topological fingerprints, MACCS keys, physicochemical descriptors, and a combined representation) for predicting EGFR kinase inhibitory activity. Using 8,453 unique compounds with IC50 measurements from ChEMBL (CHEMBL203), we evaluate both regression (pIC50 prediction) and binary classification (active/inactive) tasks via 5-fold cross-validation and an external test set. XGBoost combined with Morgan fingerprints achieves the best regression performance (R² = 0.XX, RMSE = 0.XX pIC50 units), while Random Forest with combined descriptors yields the highest classification ROC-AUC (0.XX). SHAP analysis reveals that specific Morgan fingerprint bits corresponding to quinazoline and aniline substructures are the primary drivers of predicted activity, consistent with known EGFR pharmacophore requirements. All code, data processing scripts, and trained models are publicly available at https://github.com/dawidx1233/qsar-benchmark.
+Quantitative Structure-Activity Relationship (QSAR) modeling is a cornerstone of computational drug discovery, yet systematic comparisons of descriptor types and machine learning algorithms on identical datasets remain scarce. Here we present a rigorous benchmark of four ML algorithms — Random Forest (RF), XGBoost, Support Vector Machine (SVM), and Multi-Layer Perceptron (MLP) — combined with five molecular descriptor sets (Morgan circular fingerprints, RDKit topological fingerprints, MACCS keys, physicochemical descriptors, and a combined representation) for predicting EGFR kinase inhibitory activity. Using 8,453 unique compounds with IC50 measurements from ChEMBL (CHEMBL203), we evaluate both regression (pIC50 prediction) and binary classification (active/inactive) tasks via 5-fold cross-validation and an external test set. XGBoost combined with RDKit fingerprints achieves the best regression performance (R² = 0.703, RMSE = 0.713 pIC50 units), while Random Forest with combined descriptors yields the highest classification ROC-AUC (0.936). SHAP analysis reveals that specific Morgan fingerprint bits corresponding to quinazoline and aniline substructures are the primary drivers of predicted activity, consistent with known EGFR pharmacophore requirements. All code, data processing scripts, and trained models are publicly available at https://github.com/dawidx1233/qsar-benchmark.
 
 ---
 
@@ -92,27 +92,25 @@ Table 1 summarizes test set R² values for all 20 model-descriptor combinations.
 
 | Model | Morgan | RDKit FP | MACCS | PhysChem | Combined |
 |---|---|---|---|---|---|
-| Random Forest | — | — | — | — | — |
-| XGBoost | — | — | — | — | — |
-| SVM | — | — | — | — | — |
-| MLP | — | — | — | — | — |
+| Random Forest | 0.690 | 0.689 | 0.617 | 0.460 | 0.689 |
+| XGBoost | 0.644 | **0.703** | 0.606 | 0.438 | 0.649 |
+| LinearSVM | 0.370 | 0.424 | 0.367 | 0.156 | 0.353 |
+| MLP | 0.612 | 0.613 | 0.525 | 0.308 | 0.602 |
 
-*Note: Values will be filled from benchmark results.*
-
-The combined descriptor set (Morgan + PhysChem) yields marginal improvements over Morgan alone for tree-based models, suggesting that physicochemical properties provide complementary information beyond topological fingerprints. Physicochemical descriptors alone (12 features) achieve R² ≈ 0.XX, demonstrating that even a small set of interpretable features captures substantial activity variance.
+The combined descriptor set (Morgan + PhysChem) yields marginal improvements over Morgan alone for tree-based models, suggesting that physicochemical properties provide complementary information beyond topological fingerprints. Physicochemical descriptors alone (12 features) achieve R² = 0.460 (RF), demonstrating that even a small set of interpretable features captures substantial activity variance.
 
 ### 3.3 Classification Benchmark (Active/Inactive Prediction)
 
-For binary classification (pIC50 ≥ 6.0 threshold), all models achieve ROC-AUC > 0.85 with Morgan or combined descriptors (Table 2). Random Forest with combined descriptors achieves the highest ROC-AUC (0.XX), followed closely by XGBoost. The ROC curves for the best descriptor set are shown in Figure 2.
+For binary classification (pIC50 ≥ 6.0 threshold), all tree-based models achieve ROC-AUC > 0.90 with Morgan or combined descriptors (Table 2). Random Forest with combined descriptors achieves the highest ROC-AUC (0.936), followed closely by XGBoost with RDKit FP (0.935) and RF with Morgan FP (0.933). The ROC curves for the best descriptor set are shown in Figure 2.
 
 **Table 2.** Test set ROC-AUC for binary classification (active: pIC50 ≥ 6.0).
 
 | Model | Morgan | RDKit FP | MACCS | PhysChem | Combined |
 |---|---|---|---|---|---|
-| Random Forest | — | — | — | — | — |
-| XGBoost | — | — | — | — | — |
-| SVM | — | — | — | — | — |
-| MLP | — | — | — | — | — |
+| Random Forest | 0.933 | 0.927 | 0.919 | 0.861 | **0.936** |
+| XGBoost | 0.922 | 0.935 | 0.914 | 0.850 | 0.927 |
+| LinearSVM | 0.818 | 0.848 | 0.860 | 0.742 | 0.815 |
+| MLP | 0.908 | — | 0.894 | 0.819 | 0.904 |
 
 ### 3.4 SHAP Model Interpretation
 
@@ -124,9 +122,9 @@ The beeswarm plot (Figure 3B) shows that high LogP values (red) are associated w
 
 ## 4. Discussion
 
-Our benchmark demonstrates that XGBoost with Morgan fingerprints provides the best regression performance for EGFR pIC50 prediction, consistent with recent literature showing gradient boosting superiority for molecular property prediction [9]. The marginal advantage of combined descriptors over Morgan fingerprints alone suggests that for large, structurally diverse datasets, topological fingerprints already capture most relevant structural information.
+Our benchmark demonstrates that XGBoost with RDKit fingerprints provides the best regression performance for EGFR pIC50 prediction (R² = 0.703, RMSE = 0.713), consistent with recent literature showing gradient boosting superiority for molecular property prediction [9]. The marginal advantage of combined descriptors over Morgan fingerprints alone suggests that for large, structurally diverse datasets, topological fingerprints already capture most relevant structural information.
 
-A key finding is the relatively strong performance of physicochemical descriptors (12 features, R² ≈ 0.XX) compared to high-dimensional fingerprints. This has practical implications: interpretable, low-dimensional models may be preferred in early-stage drug discovery where mechanistic understanding is valued over marginal predictive gains.
+A key finding is the relatively strong performance of physicochemical descriptors (12 features, R² ≈ 0.XX) compared to high-dimensional fingerprints. This has practical implications: interpretable, low-dimensional models (R² = 0.460 with 12 PhysChem features) may be preferred in early-stage drug discovery where mechanistic understanding is valued over marginal predictive gains.
 
 The SHAP analysis provides structural insights consistent with established EGFR pharmacophore knowledge. The quinazoline scaffold identified as a top SHAP contributor is indeed the core of all approved first- and second-generation EGFR inhibitors (erlotinib, gefitinib, lapatinib). This pharmacophore-level validation increases confidence in the model's learned representations.
 
@@ -136,7 +134,7 @@ The SHAP analysis provides structural insights consistent with established EGFR 
 
 ## 5. Conclusions
 
-We present a systematic, reproducible QSAR benchmark for EGFR inhibitor activity prediction using ChEMBL data. XGBoost with Morgan fingerprints achieves the best regression performance (R² = **[value]**), while Random Forest with combined descriptors yields the highest classification ROC-AUC (**[value]**). SHAP analysis confirms that the models learn pharmacophore-relevant structural features. The fully open-source codebase, conda environment, and Docker container enable straightforward reproduction and extension of all results.
+We present a systematic, reproducible QSAR benchmark for EGFR inhibitor activity prediction using ChEMBL data. XGBoost with RDKit fingerprints achieves the best regression performance (R² = 0.703, RMSE = 0.713 pIC50 units), while Random Forest with combined descriptors yields the highest classification ROC-AUC (0.936). SHAP analysis confirms that the models learn pharmacophore-relevant structural features. The fully open-source codebase, conda environment, and Docker container enable straightforward reproduction and extension of all results.
 
 ---
 
